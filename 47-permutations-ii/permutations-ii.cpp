@@ -1,23 +1,37 @@
 class Solution {
 public:
-    void getPermute(vector<int>&nums,int idx,vector<vector<int>>&ans){
-        if(idx==nums.size()){
-            ans.push_back(nums);
+    vector<vector<int>> ans;
+    vector<int> curr;
+    vector<bool> visited;
+
+    void backtrack(vector<int>& nums) {
+        if (curr.size() == nums.size()) {
+            ans.push_back(curr);
             return;
         }
-        unordered_set<int>s;
-        for(int i=idx;i<nums.size();i++){
-            if(s.count(nums[i])) continue;
-            s.insert(nums[i]);
-            swap(nums[i],nums[idx]);
-            getPermute(nums,idx+1,ans);
-            swap(nums[i],nums[idx]);
+
+        for (int i = 0; i < nums.size(); i++) {
+            if (visited[i]) continue;
+
+            if (i > 0 && nums[i] == nums[i - 1] && !visited[i - 1])
+                continue;
+
+            visited[i] = true;
+            curr.push_back(nums[i]);
+
+            backtrack(nums);
+
+            curr.pop_back();
+            visited[i] = false;
         }
     }
+
     vector<vector<int>> permuteUnique(vector<int>& nums) {
-        vector<vector<int>>ans;
-        sort(nums.begin(),nums.end());
-        getPermute(nums,0,ans);
+        sort(nums.begin(), nums.end());
+        visited.assign(nums.size(), false);
+
+        backtrack(nums);
+
         return ans;
     }
 };
